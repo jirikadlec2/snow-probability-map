@@ -1,6 +1,0 @@
-{
-"type": "FeatureCollection",
-"features": [
-{% for tile in boundaries %}{% if forloop.last %}{ "type": "Feature", "properties": { "id": {{tile.id}}, "val": {{tile.pixelval}} }, "geometry": { "type": "Polygon", "coordinates": [ [ [ {{tile.minX}}, {{tile.minY}} ], [ {{tile.maxX}}, {{tile.minY}} ], [ {{tile.maxX}}, {{tile.maxY}} ], [ {{tile.minX}}, {{tile.maxY}} ], [ {{tile.minX}}, {{tile.minY}} ] ] ] } }{% else %}{ "type": "Feature", "properties": { "id": {{tile.id}} }, "geometry": { "type": "Polygon", "coordinates": [ [ [ {{tile.minX}}, {{tile.minY}} ], [ {{tile.maxX}}, {{tile.minY}} ], [ {{tile.maxX}}, {{tile.maxY}} ], [ {{tile.minX}}, {{tile.maxY}} ], [ {{tile.minX}}, {{tile.minY}} ] ] ] } },{% endif %}{% endfor %}
-]
-}
