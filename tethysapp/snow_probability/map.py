@@ -12,7 +12,7 @@ def map(request):
     #configure the date picker
     today = datetime.date.today()
     date_picker = {'display_text': 'Date',
-        'name': 'endDate',
+        'name': 'date',
         'autoclose': True,
         'format': 'yyyy-mm-dd',
         'start_date': '2013-01-01',
@@ -38,6 +38,6 @@ def map(request):
                'lon_picker':lon_picker,
                'lat_picker':lat_picker}
     
-    return render(request, 'snow_inspector/openlayers_map.html', context)
+    return render(request, 'snow_probability/openlayers_map.html', context)
 
 

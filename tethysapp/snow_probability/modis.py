@@ -188,7 +188,7 @@ def get_data_for_pixel(request):
     site_name = str(x) + '-' + str(y)
     context = {'lat':lat, 'lon':lon, 'startdate':start, 'enddate':end, 'site_name':site_name, 'time_series':time_series}
 
-    xmlResponse = render_to_response('snow_inspector/waterml.xml', context)
+    xmlResponse = render_to_response('snow_probability/waterml.xml', context)
     xmlResponse['Content-Type'] = 'application/xml;'
     return xmlResponse
 
@@ -251,7 +251,7 @@ def get_data_waterml(request):
     site_name = get_site_name(float(lat), float(lon))
     context = {'lat':lat, 'lon':lon, 'startdate':start, 'enddate':end, 'site_name':site_name, 'time_series':time_series}
 
-    xmlResponse = render_to_response('snow_inspector/waterml.xml', context)
+    xmlResponse = render_to_response('snow_probability/waterml.xml', context)
     xmlResponse['Content-Type'] = 'application/xml'
     xmlResponse['content-disposition'] = "attachment; filename=output-time-series.xml"
     return xmlResponse

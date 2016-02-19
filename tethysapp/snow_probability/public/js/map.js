@@ -3,18 +3,38 @@ var popupDiv = $('#welcome-popup');
 $(document).ready(function () {
 
 
-	var lat = 40.2380;
-	var lon = -111.5500;
-	var map_zoom = 5;
+	var lat = 49.9;
+	var lon = 15.3;
+	var default_zoom = 8;
+	var map_zoom = default_zoom;
 
 
 	var modislayer = createModisLayer();
 	var pixelBoundaries;
 	var styleCache = {};
 
+	var snow_resources = [
+		'95cee185705b42acbf30879392c0e004',
+		'befab7857d41484baa7f6cd429206148',
+		'e890f486e5f74c9ab393b847372c527f',
+		'1b005f1311ed4a679afc4d76ebee9a97'
+
+	]
+	var snow_dates = [
+		'2016-02-15',
+		'2016-02-16',
+		'2016-02-17',
+		'2016-02-18'
+	]
+
+	var my_date = '2016-02-18';
+
+
 	var urlParams = getUrlVars();
 
-
+	sld_body_temple = '<?xml version="1.0" encoding="ISO-8859-1"?><StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
+      + "<NamedLayer><Name>_WS_AND_LAYER_NAME_</Name><UserStyle><Name>mysld</Name><Title>Probability gradient</Title><FeatureTypeStyle><Rule><RasterSymbolizer><ColorMap>"
+      + '<ColorMapEntry color="#FFFFFF" quantity="-1.7e+308" opacity="0"/><ColorMapEntry color="#9EC8FF" quantity="0.50" opacity="0.5"/><ColorMapEntry color="#FF12F7" quantity="0.99" opacity="0.75"/></ColorMap></RasterSymbolizer></Rule></FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>'
 
 	if (typeof urlParams !== 'undefined') {
 
@@ -28,7 +48,7 @@ $(document).ready(function () {
 
 		url_lat = urlParams["lat"];
 		url_lon = urlParams["lon"];
-		url_date = urlParams["end"];
+		url_date = urlParams["date"];
 		url_days = urlParams["days"];
 		url_zoom = urlParams["zoom"];
 
@@ -42,16 +62,18 @@ $(document).ready(function () {
 			lon = parseFloat(url_lon);
 		}
 		if (typeof url_date !== 'undefined') {
-			$("#endDate").val(url_date);
-			$("endDate").datepicker('update');
+			$("#date").val(url_date);
+			$("#date").datepicker('update');
+			console.log(url_date);
+			my_date = url_date;
 		}
 		if (typeof url_zoom !== 'undefined') {
 			map_zoom = url_zoom;
 		} else {
-			map_zoom = 5;
+			map_zoom = default_zoom;
 		}
 	} else {
-		popupDiv.modal('show');
+		//popupDiv.modal('show');
 	}
 
 	//snow location point
@@ -82,16 +104,44 @@ $(document).ready(function () {
 	});
 
     //build Esri map layer
-    var esri_layer = new ol.layer.Tile({
-	source: new ol.source.XYZ({
-		attribution: [new ol.Attribution({
-			html: 'Tiles &copy; <a href="http://services.arcgisonline.com/ArcGIS/' +
-			'rest/services/World_Topo_Map/MapServer>ArcGIS</a>'
-		})],
-		url: 'http://server.arcgisonline.com/ArcGIS/rest/services/' +
-		'World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
-		})
+
+
+	//build OpenSnowMap layer one
+	var esri_layer = new ol.layer.Tile({
+		source: new ol.source.XYZ({ url: 'http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.jpg' })
 	});
+
+	//build ski path layer
+	var ski_layer = new ol.layer.Tile({
+		source: new ol.source.XYZ({ url: 'http://www.opensnowmap.org/opensnowmap-overlay/{z}/{x}/{y}.png' })
+	})
+
+	//build geoserver layer (WMS)
+	var res_index = snow_dates.indexOf(my_date);
+
+	var geosvr_url_base = 'http://apps.hydroshare.org:8181';
+	var layer_name = snow_resources[res_index];
+	var ws_name = 'www.hydroshare.org';
+
+    var layer_id = ws_name + ':' + layer_name;
+	var geo_server_wms = geosvr_url_base + '/geoserver/wms';
+    var layer_id = ws_name + ':' + layer_name;
+
+	var sld_body = sld_body_temple.replace('_WS_AND_LAYER_NAME_', layer_id);
+	geoserver_layer = new ol.layer.Image({
+        source: new ol.source.ImageWMS({
+          ratio: 1,
+          url: geo_server_wms,
+          params: {
+                LAYERS: layer_id,
+                //STYLES: 'my_sld',
+                //sld: 'http://127.0.0.1:8080/geoserver/www/styles/sld.sld'
+                'SLD_BODY': sld_body
+                  }
+        })
+      });
+
+
 	baseMapLayer = esri_layer;
 
 
@@ -120,7 +170,7 @@ $(document).ready(function () {
 
 		var baseurl = '/apps/snow-inspector/pixel-borders/';
 
-		var pxDate = $("#endDate").val();
+		var pxDate = $("#date").val();
 
 		var pixel_url = baseurl +'?lonmin=' + xmin + '&latmin=' + ymin + '&lonmax=' + xmax + '&latmax=' + ymax + '&date=' + pxDate;
 		console.log(pixel_url)
@@ -227,7 +277,7 @@ $(document).ready(function () {
 
 	function createModisLayer() {
 
-		var modisDate = $("#endDate").val();
+		var modisDate = $("#date").val();
 		var modisUrl = "//map1{a-c}.vis.earthdata.nasa.gov/wmts-webmerc/" +
 				"MODIS_Terra_Snow_Cover/default/" + modisDate +
 				"/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png"
@@ -239,7 +289,7 @@ $(document).ready(function () {
 	}
 
 	function updateModisLayer() {
-		var modisDate1 = $("#endDate").val();
+		var modisDate1 = $("#date").val();
 		console.log(modisDate1);
 
 		var modisUrl1 = "//map1{a-c}.vis.earthdata.nasa.gov/wmts-webmerc/" +
@@ -274,15 +324,22 @@ $(document).ready(function () {
 	});
 
 
-map = new ol.Map({
-	layers: [mapQuest_layer, bing_layer, openstreet_layer, esri_layer, modislayer],
-	controls: ol.control.defaults(),
-	target: 'map_view',
-	view: new ol.View({
-		center: [0, 0],
-		zoom: map_zoom
-	})
-});
+	map = new ol.Map({
+		layers: [esri_layer, ski_layer, geoserver_layer],
+		controls: ol.control.defaults(),
+		target: 'map_view',
+		view: new ol.View({
+			center: [0, 0],
+			zoom: map_zoom
+		})
+	});
+
+	// refreshing map style
+	//if (map != null && geoserver_layer != null) {
+	//	var oseamNew = geoserver_layer.getSource();
+	//	oseamNew.updateParams({'sld_body': sld_body_temple});
+	//	map.render();
+	//}
 
 	// checking zoom end
 	map.getView().on('propertychange', function(e) {
@@ -343,7 +400,7 @@ function addPointLonLat(coordinates){
 }
 
 function refreshDate(){
-	var endDate = $("#endDate").val();
+	var endDate = $("#date").val();
 	console.log(endDate);
 	$("#end").val(endDate);
 }
@@ -357,6 +414,12 @@ $("#inputDays").val($("#inputDays").attr("placeholder"));
 $("#inputLon").val(lon);
 $("#inputLat").val(lat);
 $('#zoom').val(map.getView().getZoom());
+
+	//set the enddate
+	$("#end").val(my_date);
+	$("#date").val(my_date);
+	$("#date").datepicker('update');
+	$('.app-title').text('Snow Probability Map: ' + my_date);
 
 map.on('click', function(evt) {
 	var coordinate = evt.coordinate;

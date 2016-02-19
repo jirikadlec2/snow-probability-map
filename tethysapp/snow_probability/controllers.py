@@ -33,7 +33,7 @@ def home(request):
     """
     context = {}
 
-    return render(request, 'snow_inspector/home.html', context)
+    return render(request, 'snow_probability/home.html', context)
 
 def map(request):
     """
@@ -109,7 +109,7 @@ def map(request):
                'lat_picker':lat_picker,
                'basemap_picker':map_picker}
     
-    return render(request, 'snow_inspector/map.html', context)
+    return render(request, 'snow_probability/map.html', context)
 
 
 def snow_graph(request):
@@ -147,7 +147,7 @@ def snow_graph(request):
     #Create template context dictionary
     context = {'lat':lat, 'lon':lon, 'startDate':startDate2, 'endDate': endDate, 'waterml_url': waterml_url, 'map_url': map_url}
 
-    return render(request, 'snow_inspector/snow_graph.html', context)
+    return render(request, 'snow_probability/snow_graph.html', context)
 
 
 def getOAuthHS(request):

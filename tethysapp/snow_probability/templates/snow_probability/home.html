@@ -1,8 +1,8 @@
-{% extends "snow_inspector/base.html" %}
+{% extends "snow_probability/base.html" %}
 
 {% block app_navigation_items %}
-  <li class="active"><a href="{% url 'snow_inspector:home' %}">Home</a></li>
-  <li><a href="{% url 'snow_inspector:map' %}">Map Input</a></li>
+  <li class="active"><a href="{% url 'snow_probability:home' %}">Home</a></li>
+  <li><a href="{% url 'snow_probability:map' %}">Map Input</a></li>
 {% endblock %}
 
 {% block app_content %}
@@ -16,5 +16,5 @@
 {% endblock %}
 
 {% block app_actions %}
-  <a href="{% url 'snow_inspector:map' %}" class="btn btn-default">Go To Map</a>
+  <a href="{% url 'snow_probability:map' %}" class="btn btn-default">Go To Map</a>
 {% endblock %}

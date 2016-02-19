@@ -4,9 +4,9 @@ from setuptools import setup, find_packages
 from tethys_apps.app_installation import custom_develop_command, custom_install_command
 
 ### Apps Definition ###
-app_package = 'snow_inspector'
+app_package = 'snow_probability'
 release_package = 'tethysapp-' + app_package
-app_class = 'snow_inspector.app:SnowInspector'
+app_class = 'snow_probability.app:SnowProbability'
 app_package_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tethysapp', app_package)
 
 ### Python Dependencies ###
@@ -15,7 +15,7 @@ dependencies = ['pypng','hs-restclient']
 setup(
     name=release_package,
     version='0.0.1',
-    description='Show graph of snow cover probability from MODIS sensor for selected location',
+    description='Show maps of snow probability in Czechia based on MODIS, station and crowdsourcing data',
     long_description='',
     keywords='',
     author='Jiri Kadlec',
