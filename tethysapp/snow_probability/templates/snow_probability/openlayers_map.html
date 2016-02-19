@@ -46,6 +46,7 @@
     </li>
 
 </form>
+<img src="{% static 'snow_probability/images/legend_small.png' %}" />
 <form>
     <input type='hidden' id='end' name='end'></input>
     <input type='hidden' id='zoom' name='zoom'></input>
@@ -132,8 +133,8 @@
 
 {% endblock %}
 
-{% block app_actions %}
-<img src="{% static 'snow_probability/images/legend.png' %}" />
+{% block app_actions_override %}
+<!--<img src="{% static 'snow_probability/images/legend.png' %}" />-->
 {% endblock %}
 
 <!--<a href="{% url 'snow_probability:home' %}" class="btn btn-default">Back</a>-->
