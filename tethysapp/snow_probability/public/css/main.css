@@ -18,6 +18,9 @@
     color: red;
     font-weight: bold;
 }
+#legend_small {
+    padding-top: 20px;
+}
 .bootstrap-tagsinput, #resource-type {
     width: 100%;
 }
